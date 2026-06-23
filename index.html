@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thozhi - Your AI Sister</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #fdfaf6;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-window {
+            width: 480px;
+            max-width: 95%;
+            height: 650px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(214, 90, 49, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #f3e9dc;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #e056fd, #be2edd);
+            color: white;
+            padding: 22px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .chat-display {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fffdfb;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .bubble {
+            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+        .user-bubble {
+            background: #f7d6f7;
+            color: #3d003d;
+            align-self: flex-end;
+            border-bottom-right-radius: 3px;
+        }
+        .bot-bubble {
+            background: #f1f2f6;
+            color: #2f3640;
+            align-self: flex-start;
+            border-bottom-left-radius: 3px;
+        }
+        .input-container {
+            display: flex;
+            padding: 16px;
+            background: #ffffff;
+            border-top: 1px solid #f3e9dc;
+        }
+        input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #ebd9c8;
+            border-radius: 10px;
+            outline: none;
+            font-size: 0.98rem;
+            background-color: #fffdfb;
+        }
+        button {
+            background: #be2edd;
+            color: white;
+            border: none;
+            padding: 0 24px;
+            margin-left: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #a51ec5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-window">
+    <div class="chat-header">Thozhi AI (தோழி)</div>
+    <div class="chat-display" id="chatDisplay">
+        <div class="bubble bot-bubble">Vanakkam Amma! I am Thozhi, your friend and sister. Take a seat and rest your feet. Tell me, how are you feeling inside today? Or ask me anything you need help with!</div>
+    </div>
+    <div class="input-container">
+        <input type="text" id="userMsgInput" placeholder="Talk to your sister here..." onkeypress="checkKey(event)">
+        <button onclick="sendPayload()">Send</button>
+    </div>
+</div>
+
+<script>
+    const chatDisplay = document.getElementById('chatDisplay');
+    const userMsgInput = document.getElementById('userMsgInput');
+
+    function checkKey(e) {
+        if (e.key === 'Enter') sendPayload();
+    }
+
+    async function sendPayload() {
+        const txt = userMsgInput.value.trim();
+        if (!txt) return;
+
+        appendBubble(txt, 'user-bubble');
+        userMsgInput.value = '';
+
+        try {
+            const res = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: txt })
+            });
+            const data = await res.json();
+            appendBubble(data.reply, 'bot-bubble');
+        } catch (err) {
+            appendBubble("I'm having a little trouble thinking right now, but I'm not going anywhere.", 'bot-bubble');
+        }
+    }
+
+    function appendBubble(text, styleClass) {
+        const div = document.createElement('div');
+        div.className = `bubble ${styleClass}`;
+        div.innerText = text;
+        chatDisplay.appendChild(div);
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
