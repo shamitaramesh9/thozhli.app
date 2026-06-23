@@ -37,7 +37,7 @@ if user_prompt := st.chat_input("Talk to your sister here..."):
     }
     
     payload = {
-        "model": "llama3-8b-8192", 
+        "model": "llama3-70b-8192", 
         "messages": st.session_state.messages,
         "temperature": 0.7
     }
